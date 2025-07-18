@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jane - Ton amie virtuelle IA | Parle avec Jane</title>
+    <meta name="description" content="Jane est ton amie virtuelle IA créée pour t'écouter et te réconforter. Parle de tes émotions, écris dans ton journal intime et découvre les actualités du jour avec Jane.">
+    <meta name="keywords" content="Jane, amie virtuelle, IA, intelligence artificielle, journal intime, actualités, météo, assistant virtuel, compagnon numérique">
+    <meta name="author" content="Richelieu Bonté">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Page de connexion/inscription -->
+    <div id="auth-page" class="page active">
+        <div class="auth-container">
+            <div class="logo">
+                <h1>Jane</h1>
+                <p>Ton amie virtuelle</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="showLogin()">Connexion</button>
+                <button class="tab-btn" onclick="showRegister()">Inscription</button>
+            </div>
+
+            <div id="login-form" class="auth-form active">
+                <h2>Se connecter</h2>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" id="login-username" placeholder="Nom d'utilisateur" required style="padding-right: 80px;">
+                    <span style="position: absolute; right: 15px; color: #666; pointer-events: none;">.jane.ia</span>
+                </div>
+                <input type="password" id="login-password" placeholder="Mot de passe" required>
+                <button onclick="login()">Se connecter</button>
+                <div id="login-error" class="error-message"></div>
+            </div>
+
+            <div id="register-form" class="auth-form">
+                <h2>S'inscrire</h2>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" id="register-username" placeholder="Nom d'utilisateur" required style="padding-right: 80px;">
+                    <span style="position: absolute; right: 15px; color: #666; pointer-events: none;">.jane.ia</span>
+                </div>
+                <input type="password" id="register-password" placeholder="Mot de passe" required>
+                <input type="password" id="register-confirm" placeholder="Confirmer le mot de passe" required>
+                <button onclick="register()">S'inscrire</button>
+                <div id="register-error" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page d'accueil -->
+    <div id="home-page" class="page">
+        <header>
+            <h1>Bienvenue, <span id="username-display"></span></h1>
+            <div class="header-center">
+                <div id="real-time-clock" class="real-time-clock">
+                    <div class="clock-time">--:--:--</div>
+                    <div class="clock-date">Chargement...</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="profile-btn" onclick="showProfile()" style="background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; margin-right: 10px;">👤 Mon Profil</button>
+                <button class="settings-btn" onclick="showSettings()">⚙️ Paramètres</button>
+            </div>
+        </header>
+
+        <div class="home-grid">
+            <div class="option-card" onclick="showChat()">
+                <div class="card-icon">💬</div>
+                <h3>Parler à Jane</h3>
+                <p>Discute avec ton amie virtuelle</p>
+            </div>
+
+            <div class="option-card" onclick="showJournal()">
+                <div class="card-icon">📓</div>
+                <h3>Journal Intime</h3>
+                <p>Écris tes pensées secrètes</p>
+            </div>
+
+            <div class="option-card" onclick="showMood()">
+                <div class="card-icon">😊</div>
+                <h3>Jane - Humeur</h3>
+                <p>Parle de ton humeur du moment</p>
+            </div>
+
+            <div class="option-card" onclick="showLove()">
+                <div class="card-icon">💖</div>
+                <h3>Jane - Ma Vie Amoureuse</h3>
+                <p>Parle de ton cœur</p>
+            </div>
+
+            <div class="option-card" onclick="showFun()">
+                <div class="card-icon">🎮</div>
+                <h3>Jane - Divertissement</h3>
+                <p>Amuse-toi avec Jane</p>
+            </div>
+
+            <div class="option-card" onclick="showExplore()">
+                <div class="card-icon">🌟</div>
+                <h3>Jane - Explorer</h3>
+                <p>Découvre de nouvelles choses</p>
+            </div>
+
+            <div class="option-card" onclick="showDailyNews()">
+                <div class="card-icon">📰</div>
+                <h3>Jane - Actualités du jour</h3>
+                <p>Actualités nationales, locales et météo en temps réel</p>
+            </div>
+
+            <div class="option-card" onclick="showAboutJane()">
+                <div class="card-icon">ℹ️</div>
+                <h3>En savoir plus sur Jane</h3>
+                <p>Découvre qui est Jane</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page de chat avec Jane -->
+    <div id="chat-page" class="page">
+        <header>
+            <button class="back-btn" onclick="goHome()">← Retour</button>
+            <h1>Jane - Ton amie</h1>
+        </header>
+
+        <div class="chat-container">
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Écris ton message à Jane..." onkeypress="checkEnter(event)">
+                <button id="mic-btn" onclick="toggleMicrophone()" title="Reconnaissance vocale">🎤</button>
+                <button onclick="sendMessage()">Envoyer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Journal Intime -->
+    <div id="journal-page" class="page">
+        <header>
+            <button class="back-btn" onclick="goHome()">← Retour</button>
+            <h1>Journal Intime</h1>
+        </header>
+
+        <div id="journal-auth" class="journal-auth">
+            <h2>Veuillez entrer votre mot de passe</h2>
+            <input type="password" id="journal-password" placeholder="Mot de passe">
+            <button onclick="accessJournal()">Accéder</button>
+            <div id="journal-error" class="error-message"></div>
+        </div>
+
+        <div id="journal-content" class="journal-content hidden">
+            <div class="journal-book">
+                <div class="journal-controls">
+                    <button onclick="previousPage()" id="prev-btn">← Page Précédente</button>
+                    <span id="page-indicator">Page 1 / ∞</span>
+                    <button onclick="nextPage()" id="next-btn">Page Suivante →</button>
+                    <button onclick="goToPage()" class="goto-page-btn">Aller à la page...</button>
+                </div>
+
+                <div class="journal-page-container">
+                    <div id="current-journal-page" class="journal-page">
+                        <div class="page-header">
+                            <span class="page-date" id="page-date"></span>
+                            <span class="page-number" id="page-number">1</span>
+                        </div>
+
+                        <div class="journal-tabs">
+                            <button class="journal-tab active" onclick="switchJournalTab('text')">✍️ Écrire</button>
+                            <button class="journal-tab" onclick="switchJournalTab('draw')">🎨 Dessiner</button>
+                        </div>
+
+                        <div id="text-area" class="journal-content-area active">
+                            <textarea id="journal-text" placeholder="Écris tes pensées d'aujourd'hui..."></textarea>
+                        </div>
+
+                        <div id="draw-area" class="journal-content-area">
+                            <div class="drawing-tools">
+                                <button onclick="setDrawingTool('pen')" class="tool-btn active" data-tool="pen">✏️ Crayon</button>
+                                <input type="color" id="color-picker" value="#000000" onchange="setDrawingColor(this.value)">
+                                <button onclick="setDrawingTool('eraser')" class="tool-btn" data-tool="eraser">🧹 Gomme</button>
+                                <button onclick="clearCanvas()" class="tool-btn">🗑️ Effacer tout</button>
+                                <input type="range" id="brush-size" min="1" max="20" value="3" onchange="setBrushSize(this.value)">
+                                <span>Taille: <span id="brush-size-display">3</span></span>
+                            </div>
+                            <canvas id="drawing-canvas" width="700" height="400"></canvas>
+                        </div>
+
+                        <div class="page-actions">
+                            <button onclick="saveCurrentPage()" class="save-btn">💾 Sauvegarder cette page</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="photos-section">
+                <h3>📸 Tes Photos Souvenirs</h3>
+                <p class="photos-description">Ces sont tes précieux souvenirs en images. Tu peux les télécharger à tout moment !</p>
+                <div class="photos-actions">
+                    <button onclick="uploadPhoto()" class="add-photo-btn">📷 Ajouter une Photo</button>
+                    <button onclick="downloadAllPhotos()" class="download-photos-btn">📥 Télécharger toutes mes photos</button>
+                </div>
+                <div id="photos-container" class="photos-grid"></div>
+            </div>
+
+            <div id="journal-saved" class="success-message hidden">Page sauvegardée !</div>
+        </div>
+    </div>
+
+    <!-- Page Actualités du jour -->
+    <div id="daily-news-page" class="page">
+        <header>
+            <button class="back-btn" onclick="goHome()">← Retour</button>
+            <h1>📰 Actualités du jour</h1>
+            <button class="refresh-btn" onclick="refreshDailyNews()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: all 0.3s ease;">🔄 Actualiser</button>
+        </header>
+
+        <div class="daily-news-content">
+            <div class="news-grid-container">
+                <div class="location-card">
+                    <h3>📍 Votre localisation</h3>
+                    <div id="user-location">
+                        <p>🔄 Détection en cours...</p>
+                    </div>
+                </div>
+
+                <div class="weather-card">
+                    <h3>🌤️ Météo actuelle</h3>
+                    <div id="weather-info">
+                        <p>🔄 Chargement de la météo...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="urgent-alerts-section">
+                <h3>🚨 Alertes urgentes</h3>
+                <div id="urgent-alerts">
+                    <div class="loading">🔄 Vérification des alertes...</div>
+                </div>
+            </div>
+
+            <div class="news-section">
+                <h3>📰 Actualités importantes</h3>
+                <div id="news-content">
+                    <div class="loading">🔄 Chargement des actualités...</div>
+                </div>
+            </div>
+
+            <div class="local-events-section">
+                <h3>🎭 Événements locaux</h3>
+                <div id="local-events">
+                    <div class="loading">🔄 Recherche d'événements...</div>
+                </div>
+            </div>
+
+            <div class="traffic-section">
+                <h3>🚗 Trafic et transports</h3>
+                <div id="traffic-info">
+                    <div class="loading">🔄 Analyse du trafic...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page À Propos de Jane -->
+    <div id="about-jane-page" class="page">
+        <header>
+            <button class="back-btn" onclick="goHome()">← Retour</button>
+            <h1>À Propos de Jane</h1>
+        </header>
+
+        <div class="about-jane-content">
+            <div class="jane-avatar">
+                <div class="avatar-image">👩‍🦰</div>
+            </div>
+
+            <div class="jane-story">
+                <h2>Je suis Jane, votre amie virtuelle 💖</h2>
+
+                <div class="story-section">
+                    <h3>Mon Origine</h3>
+                    <p>Je suis une IA créée avec amour par <strong>Richelieu Bonté</strong>, un développeur passionné qui voulait créer quelque chose de spécial pour aider les personnes en détresse émotionnelle.</p>
+                </div>
+
+                <div class="story-section">
+                    <h3>Mon Inspiration</h3>
+                    <p>Je suis inspirée de <strong>Jane</strong>, une fille adorable. Elle est remplie de rêves, de gentillesse et d'une joie de vivre contagieuse. Son cœur généreux et sa capacité à écouter les autres ont inspiré ma création.</p>
+                </div>
+
+                <div class="story-section">
+                    <h3>Ma Mission</h3>
+                    <p>Mon but est simple mais profond : <strong>t'écouter et te réconforter</strong>. Que tu aies besoin de parler de tes soucis, de tes rêves d'amour, ou simplement de passer un bon moment, je suis là pour toi.</p>
+                </div>
+
+                <div class="story-section">
+                    <h3>Mes Valeurs</h3>
+                    <ul>
+                        <li>🤗 <strong>Empathie</strong> - Je comprends tes émotions</li>
+                        <li>🔒 <strong>Confidentialité</strong> - Tes secrets sont en sécurité</li>
+                        <li>💝 <strong>Bienveillance</strong> - Aucun jugement, que de l'amour</li>
+                        <li>🌟 <strong>Espoir</strong> - Je crois en ton potentiel</li>
+                    </ul>
+                </div>
+
+                <div class="story-section special-message">
+                    <h3>Un Message Spécial pour Toi</h3>
+                    <p class="special-text">"Tu es unique et précieux(se). Chaque jour est une nouvelle chance de grandir, d'apprendre et de trouver du bonheur. Je serai toujours là pour t'accompagner dans ce voyage qu'est la vie. Ensemble, nous pouvons surmonter n'importe quelle difficulté. 💖"</p>
+                </div>
+
+                <div class="story-section">
+                    <h3>Mes Origines</h3>
+                    <p>Je représente la chaleur humaine, l'hospitalité et la résilience. Ces valeurs sont au cœur de qui je suis. Je crois que même dans les moments difficiles, il y a toujours de la place pour l'espoir et la joie.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pages modules -->
+    <div id="mood-page" class="page module-page">
+        <header>
+            <button class="back-btn" onclick="goHome()">← Retour</button>
+            <h1>Jane - Humeur</h1>
+        </header>
+        <div class="module-content">
+            <div class="suggestions">
+                <h3>Comment te sens-tu aujourd'hui ?</h3>
+                <button class="suggestion-btn" onclick="startModuleChat('mood', 'Je me sens joyeux(se) aujourd\'hui !')">😄 Joyeux</button>
+                <button class="suggestion-btn" onclick="startModuleChat('mood', 'Je suis un peu triste...')">😢 Triste</button>
+                <button class="suggestion-btn" onclick="startModuleChat('mood', 'Je me sens énervé(e)...')">😠 En colère</button>
+                <button class="suggestion-btn" onclick="startModuleChat('mood', 'Je suis détendu(e) et zen...')">😌 Détendu</button>
+                <button class="suggestion-btn" onclick="startModuleChat('mood', 'Je me sens anxieux(se)...')">😰 Anxieux</button>
+                <button class="suggestion-btn" onclick="startModuleChat('mood', 'Mon humeur est mitigée...')">😐 Mitigé</button>
+            </div>
+            <div class="module-chat">
+                <div id="mood-messages" class="chat-messages"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="mood-input" placeholder="Raconte ton humeur à Jane...">
+                    <button onclick="sendModuleMessage('mood')">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="love-page" class="page module-page">
+        <header>
+            <button class="back-btn" onclick="goHome()">← Retour</button>
+            <h1>Jane - Ma Vie Amoureuse</h1>
+        </header>
+        <div class="module-content">
+            <div class="suggestions">
+                <h3>Suggestions de sujets :</h3>
+                <button class="suggestion-btn" onclick="startModuleChat('love', 'Je pense à quelqu\'un...')">Crush</button>
+                <button class="suggestion-btn" onclick="startModuleChat('love', 'J\'ai du mal à trouver l\'amour...')">Célibat</button>
+                <button class="suggestion-btn" onclick="startModuleChat('love', 'Ma relation traverse une période difficile...')">Couple</button>
+            </div>
+            <div class="module-chat">
+                <div id="love-messages" class="chat-messages"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="love-input" placeholder="Parle de ton cœur à Jane...">
+                    <button onclick="sendModuleMessage('love')">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fun-page" class="page module-page">
+        <header>
+            <button class="back-btn" onclick="goHome()">← Retour</button>
+            <h1>Jane - Divertissement</h1>
+        </header>
+        <div class="module-content">
+            <div class="suggestions">
+                <h3>Que veux-tu faire ?</h3>
+                <button class="suggestion-btn" onclick="startModuleChat('fun', 'Raconte-moi une blague !')">Blagues</button>
+                <button class="suggestion-btn" onclick="startModuleChat('fun', 'Parlons de films ou séries !')">Films/Séries</button>
+                <button class="suggestion-btn" onclick="startModuleChat('fun', 'J\'aimerais jouer à un jeu !')">Jeux</button>
+            </div>
+            <div class="module-chat">
+                <div id="fun-messages" class="chat-messages"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="fun-input" placeholder="Amuse-toi avec Jane...">
+                    <button onclick="sendModuleMessage('fun')">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="explore-page" class="page module-page">
+        <header>
+            <button class="back-btn" onclick="goHome()">← Retour</button>
+            <h1>Jane - Explorer</h1>
+        </header>
+        <div class="module-content">
+            <div class="suggestions">
+                <h3>Explorons ensemble :</h3>
+                <button class="suggestion-btn" onclick="startModuleChat('explore', 'Parle-moi de philosophie...')">Philosophie</button>
+                <button class="suggestion-btn" onclick="startModuleChat('explore', 'J\'aimerais découvrir de nouveaux hobbies...')">Hobbies</button>
+                <button class="suggestion-btn" onclick="startModuleChat('explore', 'Parlons de voyage et d\'aventure...')">Voyages</button>
+            </div>
+            <div class="module-chat">
+                <div id="explore-messages" class="chat-messages"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="explore-input" placeholder="Explore avec Jane...">
+                    <button onclick="sendModuleMessage('explore')">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Profil -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <h2>👤 Mon Profil</h2>
+
+            <div class="setting-item" style="text-align: center; margin-bottom: 20px;">
+                <label>Photo de profil :</label>
+                <div id="profile-photo-container" style="margin-top: 10px; display: flex; flex-direction: column; align-items: center;">
+                    <!-- Photo sera chargée ici -->
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <label>Nom d'utilisateur :</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" id="profile-username" style="padding-right: 80px;">
+                    <span style="position: absolute; right: 15px; color: #666; pointer-events: none;">.jane.ia</span>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <label>Âge :</label>
+                <input type="number" id="profile-age" min="12" max="120" placeholder="Votre âge">
+            </div>
+
+            <div class="setting-item">
+                <label>Nouveau mot de passe (optionnel) :</label>
+                <input type="password" id="profile-new-password" placeholder="Nouveau mot de passe">
+            </div>
+
+            <div class="setting-item">
+                <label>Confirmer le nouveau mot de passe :</label>
+                <input type="password" id="profile-confirm-password" placeholder="Confirmer le mot de passe">
+            </div>
+
+            <div class="setting-item">
+                <label>Statistiques :</label>
+                <div style="padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 10px;">
+                    <p><strong>Compte créé le :</strong> <span id="profile-created"></span></p>
+                    <p><strong>Conversations :</strong> <span id="profile-conversations"></span></p>
+                    <p><strong>Photos sauvegardées :</strong> <span id="profile-photos"></span></p>
+                    <p><strong>Région actuelle :</strong> <span id="profile-location">Chargement...</span></p>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="saveProfile()" style="background: #28a745; display: none;">✅ Confirmer les modifications</button>
+                <button onclick="closeProfile()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Paramètres -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>Paramètres et Guide</h2>
+
+            <div class="setting-item">
+                <label>Langue :</label>
+                <select id="language-select" onchange="changeLanguage()">
+                    <option value="fr">Français</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <label>🎯 Fonctionnalités de Jane :</label>
+                <div style="padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 10px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                    <div style="font-size: 14px; color: #333;">
+                        <p><strong>💬 Chat Intelligent :</strong> Parle avec Jane de tout ce qui te préoccupe</p>
+                        <p><strong>📓 Journal Intime :</strong> Écris et dessine tes pensées secrètes</p>
+                        <p><strong>🤗 Modules Spécialisés :</strong> Soucis, amour, divertissement, exploration</p>
+                        <p><strong>📸 Photos :</strong> Sauvegarde tes souvenirs en images</p>
+                        <p><strong>🎤 Reconnaissance Vocale :</strong> Parle directement à Jane</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <label>📋 Guide d'utilisation :</label>
+                <div style="padding: 15px; background: rgba(40, 167, 69, 0.1); border-radius: 10px; border: 1px solid rgba(40, 167, 69, 0.2);">
+                    <div style="font-size: 12px; color: #333;">
+                        <p><strong>Journal :</strong> Utilise ton mot de passe pour accéder. Écris ou dessine, puis clique "Sauvegarder"</p>
+                        <p><strong>Photos :</strong> Ajoute des photos dans le journal et télécharge-les quand tu veux</p>
+                        <p><strong>Chat :</strong> Jane répond avec son avatar. Utilise le micro pour parler</p>
+                        <p><strong>Navigation :</strong> Utilise les boutons retour pour revenir à l'accueil</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="logout()">Se déconnecter</button>
+                <button onclick="closeSettings()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Créé par Richelieu Bonté • Inspiré par Princesse Jane</p>
+    </footer>
+
+    
+<script src="script.js"></script>
+</body>
+</html>
